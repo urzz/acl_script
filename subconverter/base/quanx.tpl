@@ -34,7 +34,7 @@ static=🎮 游戏平台, direct, img-url=https://raw.githubusercontent.com/Kool
 static=📹 油管视频, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/YouTube.png
 static=🎥 奈飞视频, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Netflix.png
 static=🎯 全球直连, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Direct.png
-static=🛑 全球拦截, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Advertising.png
+static=🛑 广告拦截, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Advertising.png
 static=🐟 漏网之鱼, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Final.png
 static=🏡 HomeLab, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Drill.png
 static=🇺🇲 美国节点, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/US.png
