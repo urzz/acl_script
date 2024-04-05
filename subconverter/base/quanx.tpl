@@ -36,9 +36,10 @@ static=🎥 奈飞视频, direct, img-url=https://raw.githubusercontent.com/Kool
 static=🎯 全球直连, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Direct.png
 static=🛑 广告拦截, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Advertising.png
 static=🐟 漏网之鱼, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Final.png
-static=🏡 HomeLab, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Drill.png
+static=🏡 内网穿透, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Drill.png
 static=🇺🇲 美国节点, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/US.png
 static=🤖 AI节点, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Bot.png
+static=🌊 Home节点, direct, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Back.png
 
 [server_remote]
 
