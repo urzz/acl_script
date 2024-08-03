@@ -19,7 +19,7 @@ allow-lan: {{ default(global.clash.allow_lan, "true") }}
 # 绑定 IP 地址，仅作用于 allow-lan 为 true, '*'表示所有地址
 bind-address: {{ default(global.clash.bind_addr, "*") }}
 
-{% if global.clash.lan_need_auth %}
+{% if default(global.clash.lan_need_auth, "false") %}
 authentication: # http,socks 入口的验证用户名，密码
   - "{{ default(global.clash.authentication, "admin:admin") }}"
 {% endif %}
