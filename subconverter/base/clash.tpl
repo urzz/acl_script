@@ -26,11 +26,13 @@ authentication: # http,socks 入口的验证用户名，密码
 
 # 设置跳过验证的 IP 段
 skip-auth-prefixes:
+  - 192.168.96.1/20
   - 127.0.0.1/8
   - ::1/128
 
 # 允许连接的 IP 地址段，仅作用于 allow-lan 为 true, 默认值为 0.0.0.0/0 和::/0
 lan-allowed-ips:
+  - 192.168.96.1/20
   - 0.0.0.0/0
   - ::/0
 
@@ -51,9 +53,9 @@ mode: {{ default(global.clash.mode, "rule") }}
 
 #自定义 geodata url
 geox-url:
-  geoip: {{ default(global.clash.geoip_url, "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat") }}
-  geosite: {{ default(global.clash.geoip_url, "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat") }}
-  mmdb: {{ default(global.clash.geoip_url, "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.metadb") }}
+  geoip: {{ default(global.clash.geoip_url, "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/release/geoip.dat") }}
+  geosite: {{ default(global.clash.geoip_url, "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/release/geosite.dat") }}
+  mmdb: {{ default(global.clash.geoip_url, "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/release/geoip.metadb") }}
 
 geo-auto-update: true # 是否自动更新 geodata
 geo-update-interval: 24 # 更新间隔，单位：小时
@@ -97,9 +99,9 @@ keep-alive-interval: 15
 hosts:
   '*.mihomo.dev': 127.0.0.1
 
-profile: # 存储 select 选择记录
-  store-selected: false
-
+profile: 
+  # 存储 select 选择记录
+  store-selected: true
   # 持久化 fake-ip
   store-fake-ip: true
 
