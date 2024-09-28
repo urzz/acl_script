@@ -1,0 +1,10 @@
+domain:outer.urzz.me	   43.163.247.71
+domain:jp-1.urzz.me		   43.163.247.71
+domain:traefik.urzz.me	   43.163.247.71
+domain:urzz.me		       192.168.98.254
+domain:m-team.cc           104.16.120.95
+domain:audiences.me        104.16.120.95
+domain:hddolby.com         104.16.120.95
+domain:m-team.io           104.16.120.95
+domain:api.themoviedb.org  54.230.129.74
+domain:api.thetvdb.com     54.230.0.118

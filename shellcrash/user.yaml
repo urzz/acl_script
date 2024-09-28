@@ -2,13 +2,14 @@ dns:
   cache-algorithm: arc
   prefer-h3: true
   enable: true
-  listen: :1053
+  listen: 0.0.0.0:53
   use-hosts: true
   ipv6: false
   default-nameserver:
     - 192.168.98.130
     - 192.168.99.32
   enhanced-mode: fake-ip
+  # enhanced-mode: redir-host
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
     - '+.urzz.me'
