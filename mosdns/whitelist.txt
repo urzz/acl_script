@@ -1,2 +1,3 @@
 domain:icc2022.de
+domain:icc2022.xyz
 domain:czhch.com
