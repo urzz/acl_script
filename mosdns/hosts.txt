@@ -6,5 +6,6 @@ domain:m-team.cc           104.16.120.95
 domain:audiences.me        104.16.120.95
 domain:hddolby.com         104.16.120.95
 domain:m-team.io           104.16.120.95
+domain:crabpt.vip          104.16.120.95
 domain:api.themoviedb.org  54.230.129.74
 domain:api.thetvdb.com     54.230.0.118
