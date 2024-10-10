@@ -1,4 +1,4 @@
-regexp:.+\.urzz\.me$       192.168.98.254
+regexp:^[^.]+\.urzz\.me$       192.168.98.254
 domain:m-team.cc           104.16.120.95
 domain:audiences.me        104.16.120.95
 domain:hddolby.com         104.16.120.95
