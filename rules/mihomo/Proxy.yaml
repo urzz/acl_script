@@ -2,4 +2,6 @@ payload:
   - DOMAIN-SUFFIX,metacubex.one
   - DOMAIN-SUFFIX,grafana.com
   - DOMAIN-SUFFIX,follow.is
+  - DOMAIN-SUFFIX,outer.urzz.me
   - DOMAIN-KEYWORD,acaisbest
+  - IP-CIDR,43.130.235.246/32

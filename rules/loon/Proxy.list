@@ -2,3 +2,5 @@ DOMAIN-SUFFIX,metacubex.one
 DOMAIN-SUFFIX,grafana.com
 DOMAIN-SUFFIX,follow.is
 DOMAIN-KEYWORD,acaisbest
+DOMAIN-SUFFIX,outer.urzz.me
+IP-CIDR,43.130.235.246/32
