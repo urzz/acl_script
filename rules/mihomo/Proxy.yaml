@@ -4,4 +4,5 @@ payload:
   - DOMAIN-SUFFIX,follow.is
   - DOMAIN-SUFFIX,outer.urzz.me
   - DOMAIN-KEYWORD,acaisbest
+  - DOMAIN,cursor.blob.core.windows.net
   - IP-CIDR,43.130.235.246/32
