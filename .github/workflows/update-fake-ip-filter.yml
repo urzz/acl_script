@@ -2,8 +2,8 @@ name: 更新 Fake IP 过滤规则
 
 on:
   schedule:
-    # 每天 UTC 时间 00:00 执行（北京时间 8:00）
-    - cron: '0 0 * * *'
+    # 每天 UTC 时间 2:00 执行（北京时间 10:00）
+    - cron: '0 2 * * *'
   workflow_dispatch:
     # 允许手动触发
   push:
@@ -35,9 +35,11 @@ jobs:
             """安全地读取远程文件，忽略错误"""
             try:
                 with urllib.request.urlopen(url, timeout=30) as response:
-                    return response.read().decode('utf-8').splitlines()
+                    content = response.read().decode('utf-8').splitlines()
+                    print(f"✅ 成功读取远程文件，共 {len(content)} 行")
+                    return content
             except Exception as e:
-                print(f"警告: 无法读取远程文件 {url}: {e}")
+                print(f"❌ 无法读取远程文件 {url}: {e}")
                 return []
         
         def read_local_file(filepath):
@@ -45,33 +47,41 @@ jobs:
             try:
                 if os.path.exists(filepath):
                     with open(filepath, 'r', encoding='utf-8') as f:
-                        return f.read().splitlines()
+                        content = f.read().splitlines()
+                        print(f"✅ 本地文件存在，共 {len(content)} 行")
+                        return content
                 else:
-                    print(f"警告: 本地文件不存在: {filepath}")
+                    print(f"⚠️  本地文件不存在: {filepath}")
                     return []
             except Exception as e:
-                print(f"警告: 无法读取本地文件 {filepath}: {e}")
+                print(f"❌ 无法读取本地文件 {filepath}: {e}")
                 return []
         
         def needs_quotes(domain):
             """判断域名是否需要用引号包起来"""
             # 包含通配符或特殊字符的需要加引号
-            special_chars = ['*', '+', '.']
+            special_chars = ['*', '+']
             return any(char in domain for char in special_chars) or domain.startswith('.')
         
         def filter_lines(lines):
             """过滤掉注释行和空行，保持原始域名格式，适当添加引号"""
             filtered = []
+            skipped_count = 0
+            
             for line in lines:
+                original_line = line
                 line = line.strip()
+                
                 # 跳过空行和注释行
                 if not line or line.startswith('#'):
+                    skipped_count += 1
                     continue
                     
                 # 移除行内注释
                 if '#' in line:
                     line = line.split('#')[0].strip()
                     if not line:
+                        skipped_count += 1
                         continue
                 
                 # 根据是否包含特殊字符决定是否加引号
@@ -80,6 +90,7 @@ jobs:
                 else:
                     filtered.append(f"  - {line}")
             
+            print(f"📊 过滤统计: 跳过 {skipped_count} 行注释/空行，保留 {len(filtered)} 行有效规则")
             return filtered
         
         # 远程文件 URL
@@ -91,35 +102,45 @@ jobs:
         # 输出文件路径
         output_file = "rules/mihomo/fake_ip_filter.yaml"
         
-        print("开始处理 Fake IP 过滤规则...")
+        print("🚀 开始处理 Fake IP 过滤规则...")
+        print(f"📥 远程文件: {remote_url}")
+        print(f"📄 本地文件: {local_file}")
+        print(f"📤 输出文件: {output_file}")
         
         # 读取远程文件
-        print("读取远程文件...")
+        print("\n📡 读取远程文件...")
         remote_lines = read_remote_file(remote_url)
-        print(f"远程文件读取到 {len(remote_lines)} 行")
         
         # 读取本地文件
-        print("读取本地文件...")
+        print("\n📁 读取本地文件...")
         local_lines = read_local_file(local_file)
-        print(f"本地文件读取到 {len(local_lines)} 行")
         
         # 合并所有行
         all_lines = remote_lines + local_lines
-        print(f"合并后共 {len(all_lines)} 行")
+        print(f"\n📋 合并后共 {len(all_lines)} 行原始数据")
+        
+        if len(all_lines) == 0:
+            print("❌ 没有读取到任何规则数据！")
+            sys.exit(1)
+        
+        # 显示前几行原始内容
+        print("\n📝 原始内容示例（前10行）:")
+        for i, line in enumerate(all_lines[:10]):
+            print(f"   {i+1:2d}. {repr(line)}")
         
         # 过滤处理
-        print("过滤注释和空行...")
+        print("\n🔍 过滤和处理规则...")
         filtered_rules = filter_lines(all_lines)
         
         # 去重但保持原始格式
         unique_rules = list(dict.fromkeys(filtered_rules))
-        print(f"过滤和去重后共 {len(unique_rules)} 条规则")
+        print(f"🎯 去重后共 {len(unique_rules)} 条唯一规则")
         
         # 确保输出目录存在
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
         
         # 生成 mihomo rule-set 格式的 YAML (behavior: domain)
-        print(f"写入到 {output_file}...")
+        print(f"\n💾 写入到 {output_file}...")
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write("# Mihomo Fake IP Filter Rule Set\n")
             f.write("# Generated from ShellCrash and local rules\n")
@@ -130,18 +151,17 @@ jobs:
             for rule in sorted(unique_rules):
                 f.write(f"{rule}\n")
         
-        print(f"✅ 成功生成 {output_file}")
-        print(f"📊 共包含 {len(unique_rules)} 条 Fake IP 过滤规则")
-        
-        # 显示配置使用方法
-        print("\n📋 使用方法:")
-        print("1. 将生成的文件放置在 mihomo 配置目录下")
-        print("2. 在主配置文件中添加:")
-        print("   fake-ip-filter:")
-        print("     - 'rule-set:fake_ip_filter'")
+        # 检查文件是否成功生成
+        if os.path.exists(output_file):
+            file_size = os.path.getsize(output_file)
+            print(f"✅ 文件生成成功: {output_file} ({file_size} bytes)")
+        else:
+            print(f"❌ 文件生成失败: {output_file}")
+            
+        print(f"\n📊 处理完成，共包含 {len(unique_rules)} 条 Fake IP 过滤规则")
         
         # 显示一些示例规则供参考
-        print("\n📋 生成的规则示例:")
+        print("\n📋 生成的规则示例（前10条）:")
         for i, rule in enumerate(sorted(unique_rules)[:10]):
             print(f"   {rule.strip()}")
         if len(unique_rules) > 10:
@@ -149,16 +169,44 @@ jobs:
         
         EOF
         
+    - name: 显示生成的文件内容
+      run: |
+        echo "📄 检查生成的文件..."
+        if [ -f "rules/mihomo/fake_ip_filter.yaml" ]; then
+          echo "✅ 文件存在"
+          echo "📊 文件大小: $(wc -c < rules/mihomo/fake_ip_filter.yaml) bytes"
+          echo "📊 文件行数: $(wc -l < rules/mihomo/fake_ip_filter.yaml) lines"
+          echo ""
+          echo "📋 文件内容（前20行）:"
+          head -20 rules/mihomo/fake_ip_filter.yaml
+          echo ""
+          echo "📋 文件内容（后10行）:"
+          tail -10 rules/mihomo/fake_ip_filter.yaml
+        else
+          echo "❌ 文件不存在!"
+        fi
+        
     - name: 检查文件变化
       id: check_changes
       run: |
-        if git diff --quiet; then
+        echo "🔍 检查 Git 状态..."
+        git status
+        echo ""
+        echo "🔍 检查未跟踪的文件..."
+        git ls-files --others --exclude-standard
+        echo ""
+        echo "🔍 检查已修改的文件..."
+        git diff --name-only
+        echo ""
+        if git diff --quiet --exit-code && [ -z "$(git ls-files --others --exclude-standard)" ]; then
           echo "has_changes=false" >> $GITHUB_OUTPUT
-          echo "📋 没有检测到规则变化"
+          echo "📋 没有检测到任何变化"
         else
           echo "has_changes=true" >> $GITHUB_OUTPUT
-          echo "📝 检测到规则变化"
-          git diff --name-only
+          echo "📝 检测到文件变化"
+          echo "🔍 具体变化:"
+          git diff --stat
+          git diff
         fi
         
     - name: 提交变化
@@ -181,4 +229,14 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }} 
+        branch: ${{ github.ref }}
+        
+    - name: 总结
+      run: |
+        echo "🎉 Action 执行完成"
+        echo "📊 处理结果:"
+        if [ "${{ steps.check_changes.outputs.has_changes }}" == "true" ]; then
+          echo "   ✅ 检测到变化并已提交"
+        else
+          echo "   ℹ️  没有检测到变化，未产生提交"
+        fi 
