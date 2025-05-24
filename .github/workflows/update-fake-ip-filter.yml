@@ -1,0 +1,184 @@
+name: 更新 Fake IP 过滤规则
+
+on:
+  schedule:
+    # 每天 UTC 时间 00:00 执行（北京时间 8:00）
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # 允许手动触发
+  push:
+    paths:
+      - 'rules/mihomo/fake_ip_filter.list'
+      - '.github/workflows/update-fake-ip-filter.yml'
+
+jobs:
+  update-fake-ip-filter:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置 Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        
+    - name: 下载和处理 Fake IP 过滤规则
+      run: |
+        python3 << 'EOF'
+        import urllib.request
+        import os
+        import sys
+        
+        def read_remote_file(url):
+            """安全地读取远程文件，忽略错误"""
+            try:
+                with urllib.request.urlopen(url, timeout=30) as response:
+                    return response.read().decode('utf-8').splitlines()
+            except Exception as e:
+                print(f"警告: 无法读取远程文件 {url}: {e}")
+                return []
+        
+        def read_local_file(filepath):
+            """安全地读取本地文件，忽略错误"""
+            try:
+                if os.path.exists(filepath):
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        return f.read().splitlines()
+                else:
+                    print(f"警告: 本地文件不存在: {filepath}")
+                    return []
+            except Exception as e:
+                print(f"警告: 无法读取本地文件 {filepath}: {e}")
+                return []
+        
+        def needs_quotes(domain):
+            """判断域名是否需要用引号包起来"""
+            # 包含通配符或特殊字符的需要加引号
+            special_chars = ['*', '+', '.']
+            return any(char in domain for char in special_chars) or domain.startswith('.')
+        
+        def filter_lines(lines):
+            """过滤掉注释行和空行，保持原始域名格式，适当添加引号"""
+            filtered = []
+            for line in lines:
+                line = line.strip()
+                # 跳过空行和注释行
+                if not line or line.startswith('#'):
+                    continue
+                    
+                # 移除行内注释
+                if '#' in line:
+                    line = line.split('#')[0].strip()
+                    if not line:
+                        continue
+                
+                # 根据是否包含特殊字符决定是否加引号
+                if needs_quotes(line):
+                    filtered.append(f"  - '{line}'")
+                else:
+                    filtered.append(f"  - {line}")
+            
+            return filtered
+        
+        # 远程文件 URL
+        remote_url = "https://raw.githubusercontent.com/juewuy/ShellCrash/refs/heads/dev/public/fake_ip_filter.list"
+        
+        # 本地文件路径
+        local_file = "rules/mihomo/fake_ip_filter.list"
+        
+        # 输出文件路径
+        output_file = "rules/mihomo/fake_ip_filter.yaml"
+        
+        print("开始处理 Fake IP 过滤规则...")
+        
+        # 读取远程文件
+        print("读取远程文件...")
+        remote_lines = read_remote_file(remote_url)
+        print(f"远程文件读取到 {len(remote_lines)} 行")
+        
+        # 读取本地文件
+        print("读取本地文件...")
+        local_lines = read_local_file(local_file)
+        print(f"本地文件读取到 {len(local_lines)} 行")
+        
+        # 合并所有行
+        all_lines = remote_lines + local_lines
+        print(f"合并后共 {len(all_lines)} 行")
+        
+        # 过滤处理
+        print("过滤注释和空行...")
+        filtered_rules = filter_lines(all_lines)
+        
+        # 去重但保持原始格式
+        unique_rules = list(dict.fromkeys(filtered_rules))
+        print(f"过滤和去重后共 {len(unique_rules)} 条规则")
+        
+        # 确保输出目录存在
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        
+        # 生成 mihomo rule-set 格式的 YAML (behavior: domain)
+        print(f"写入到 {output_file}...")
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write("# Mihomo Fake IP Filter Rule Set\n")
+            f.write("# Generated from ShellCrash and local rules\n")
+            f.write("# Usage in config.yaml:\n")
+            f.write("#   fake-ip-filter:\n")
+            f.write("#     - 'rule-set:fake_ip_filter'\n\n")
+            f.write("payload:\n")
+            for rule in sorted(unique_rules):
+                f.write(f"{rule}\n")
+        
+        print(f"✅ 成功生成 {output_file}")
+        print(f"📊 共包含 {len(unique_rules)} 条 Fake IP 过滤规则")
+        
+        # 显示配置使用方法
+        print("\n📋 使用方法:")
+        print("1. 将生成的文件放置在 mihomo 配置目录下")
+        print("2. 在主配置文件中添加:")
+        print("   fake-ip-filter:")
+        print("     - 'rule-set:fake_ip_filter'")
+        
+        # 显示一些示例规则供参考
+        print("\n📋 生成的规则示例:")
+        for i, rule in enumerate(sorted(unique_rules)[:10]):
+            print(f"   {rule.strip()}")
+        if len(unique_rules) > 10:
+            print(f"   ... 还有 {len(unique_rules) - 10} 条规则")
+        
+        EOF
+        
+    - name: 检查文件变化
+      id: check_changes
+      run: |
+        if git diff --quiet; then
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+          echo "📋 没有检测到规则变化"
+        else
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "📝 检测到规则变化"
+          git diff --name-only
+        fi
+        
+    - name: 提交变化
+      if: steps.check_changes.outputs.has_changes == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add rules/mihomo/fake_ip_filter.yaml
+        git commit -m "🤖 自动更新 Fake IP 过滤规则
+        
+        - 合并远程和本地规则
+        - 过滤注释和无效行
+        - 生成 mihomo rule-set 格式
+        - 自动为通配符域名添加引号
+        
+        更新时间: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+        
+    - name: 推送变化
+      if: steps.check_changes.outputs.has_changes == 'true'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }} 

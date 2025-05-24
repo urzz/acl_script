@@ -1,0 +1,7 @@
+# 自己的域名不走fakeIp
++.urzz.me
++.urzz.xyz
+# 强制不走fakeIp
+*.githubusercontent.com
+github.com
+cursor.blob.core.windows.net
