@@ -93,6 +93,16 @@ jobs:
             print(f"📊 过滤统计: 跳过 {skipped_count} 行注释/空行，保留 {len(filtered)} 行有效规则")
             return filtered
         
+        def ordered_unique(items):
+            """保持顺序的去重"""
+            seen = set()
+            result = []
+            for item in items:
+                if item not in seen:
+                    seen.add(item)
+                    result.append(item)
+            return result
+        
         # 远程文件 URL
         remote_url = "https://raw.githubusercontent.com/juewuy/ShellCrash/refs/heads/dev/public/fake_ip_filter.list"
         
@@ -103,21 +113,23 @@ jobs:
         output_file = "rules/mihomo/fake_ip_filter.yaml"
         
         print("🚀 开始处理 Fake IP 过滤规则...")
-        print(f"📥 远程文件: {remote_url}")
         print(f"📄 本地文件: {local_file}")
+        print(f"📥 远程文件: {remote_url}")
         print(f"📤 输出文件: {output_file}")
         
-        # 读取远程文件
-        print("\n📡 读取远程文件...")
-        remote_lines = read_remote_file(remote_url)
-        
-        # 读取本地文件
+        # 先读取本地文件
         print("\n📁 读取本地文件...")
         local_lines = read_local_file(local_file)
         
-        # 合并所有行
-        all_lines = remote_lines + local_lines
+        # 再读取远程文件
+        print("\n📡 读取远程文件...")
+        remote_lines = read_remote_file(remote_url)
+        
+        # 合并：本地规则在前，远程规则在后
+        all_lines = local_lines + remote_lines
         print(f"\n📋 合并后共 {len(all_lines)} 行原始数据")
+        print(f"   - 本地规则: {len(local_lines)} 行")
+        print(f"   - 远程规则: {len(remote_lines)} 行")
         
         if len(all_lines) == 0:
             print("❌ 没有读取到任何规则数据！")
@@ -126,15 +138,17 @@ jobs:
         # 显示前几行原始内容
         print("\n📝 原始内容示例（前10行）:")
         for i, line in enumerate(all_lines[:10]):
-            print(f"   {i+1:2d}. {repr(line)}")
+            source = "本地" if i < len(local_lines) else "远程"
+            print(f"   {i+1:2d}. [{source}] {repr(line)}")
         
         # 过滤处理
         print("\n🔍 过滤和处理规则...")
         filtered_rules = filter_lines(all_lines)
         
-        # 去重但保持原始格式
-        unique_rules = list(dict.fromkeys(filtered_rules))
-        print(f"🎯 去重后共 {len(unique_rules)} 条唯一规则")
+        # 有序去重，保持原始顺序
+        unique_rules = ordered_unique(filtered_rules)
+        removed_duplicates = len(filtered_rules) - len(unique_rules)
+        print(f"🎯 去重完成: 移除 {removed_duplicates} 条重复规则，保留 {len(unique_rules)} 条唯一规则")
         
         # 确保输出目录存在
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
@@ -143,12 +157,14 @@ jobs:
         print(f"\n💾 写入到 {output_file}...")
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write("# Mihomo Fake IP Filter Rule Set\n")
-            f.write("# Generated from ShellCrash and local rules\n")
+            f.write("# Generated from local and ShellCrash rules\n")
+            f.write("# Local rules are placed first, followed by remote rules\n")
             f.write("# Usage in config.yaml:\n")
             f.write("#   fake-ip-filter:\n")
             f.write("#     - 'rule-set:fake_ip_filter'\n\n")
             f.write("payload:\n")
-            for rule in sorted(unique_rules):
+            # 不排序，保持原始顺序
+            for rule in unique_rules:
                 f.write(f"{rule}\n")
         
         # 检查文件是否成功生成
@@ -159,11 +175,12 @@ jobs:
             print(f"❌ 文件生成失败: {output_file}")
             
         print(f"\n📊 处理完成，共包含 {len(unique_rules)} 条 Fake IP 过滤规则")
+        print("📋 规则顺序: 本地规则 → 远程规则（保持原始顺序，无排序）")
         
         # 显示一些示例规则供参考
-        print("\n📋 生成的规则示例（前10条）:")
-        for i, rule in enumerate(sorted(unique_rules)[:10]):
-            print(f"   {rule.strip()}")
+        print("\n📋 生成的规则示例（前10条，按原始顺序）:")
+        for i, rule in enumerate(unique_rules[:10]):
+            print(f"   {i+1:2d}. {rule.strip()}")
         if len(unique_rules) > 10:
             print(f"   ... 还有 {len(unique_rules) - 10} 条规则")
         
@@ -206,7 +223,6 @@ jobs:
           echo "📝 检测到文件变化"
           echo "🔍 具体变化:"
           git diff --stat
-          git diff
         fi
         
     - name: 提交变化
@@ -217,10 +233,10 @@ jobs:
         git add rules/mihomo/fake_ip_filter.yaml
         git commit -m "🤖 自动更新 Fake IP 过滤规则
         
-        - 合并远程和本地规则
+        - 本地规则优先，远程规则在后
+        - 保持原始顺序，不重新排序
         - 过滤注释和无效行
         - 生成 mihomo rule-set 格式
-        - 自动为通配符域名添加引号
         
         更新时间: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
         
