@@ -1,0 +1,14 @@
+# CDN 测速脚本产生的文件
+cdn_speedtest/
+cdn_speedtest_*/
+*.csv
+*_results.txt
+*_best.txt
+*_updated.txt
+CloudflareST*
+cloudfront_ips.txt
+
+# 其他临时文件
+*.tmp
+*.log
+*.bak 
