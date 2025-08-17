@@ -3,6 +3,7 @@ payload:
   - DOMAIN-SUFFIX,grafana.com
   - DOMAIN-SUFFIX,follow.is
   - DOMAIN-SUFFIX,outer.urzz.me
+  - DOMAIN-SUFFIX,okx.com
   - DOMAIN-KEYWORD,acaisbest
   - DOMAIN,cursor.blob.core.windows.net
   - IP-CIDR,43.130.235.246/32
