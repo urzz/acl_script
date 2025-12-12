@@ -1,2 +1,9 @@
+# NAME: Manhuagui
+# AUTHOR: fooksky
+# REPO: https://github.com/fooksky/acl_script
+# UPDATED: 2025-12-12
+# DOMAIN-SUFFIX: 1
+# TOTAL: 1
+
 payload:
   - DOMAIN-SUFFIX,manhuagui.com

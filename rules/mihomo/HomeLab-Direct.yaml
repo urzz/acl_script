@@ -1,3 +1,11 @@
+# NAME: HomeLab-Direct
+# AUTHOR: fooksky
+# REPO: https://github.com/fooksky/acl_script
+# UPDATED: 2025-12-12
+# DOMAIN: 1
+# DOMAIN-SUFFIX: 1
+# TOTAL: 2
+
 payload:
   - DOMAIN,traefik.urzz.me
   - DOMAIN-SUFFIX,home.urzz.me

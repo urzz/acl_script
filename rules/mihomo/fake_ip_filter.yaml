@@ -1,3 +1,10 @@
+# NAME: Fake-IP-Filter
+# AUTHOR: fooksky
+# REPO: https://github.com/fooksky/acl_script
+# UPDATED: 2025-12-12
+# RULE-SET: 127
+# TOTAL: 127
+
 # Mihomo Fake IP Filter Rule Set
 # Generated from local and ShellCrash rules
 # Local rules are placed first, followed by remote rules

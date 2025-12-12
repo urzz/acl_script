@@ -1,3 +1,10 @@
+# NAME: iXsystems
+# AUTHOR: fooksky
+# REPO: https://github.com/fooksky/acl_script
+# UPDATED: 2025-12-12
+# DOMAIN-SUFFIX: 2
+# TOTAL: 2
+
 payload:
   - DOMAIN-SUFFIX,ixsystems.com
   - DOMAIN-SUFFIX,k8s.io

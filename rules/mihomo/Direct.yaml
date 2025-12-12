@@ -1,3 +1,11 @@
+# NAME: Direct
+# AUTHOR: fooksky
+# REPO: https://github.com/fooksky/acl_script
+# UPDATED: 2025-12-12
+# DOMAIN: 1
+# DOMAIN-SUFFIX: 4
+# TOTAL: 5
+
 payload:
   - DOMAIN-SUFFIX,qfbwcd.xyz
   - DOMAIN-SUFFIX,paradox-interactive.com
