@@ -1,0 +1,11 @@
+# Cloudflare 域名列表 - 本地网络优选
+# 更新时间: 2026-01-06 02:01:52
+# 测试环境: 本地网络
+# 负载均衡策略: 不同域名使用不同优选IP
+# 格式：domain:域名 IP地址
+
+domain:m-team.cc            104.17.162.186
+domain:audiences.me         104.16.101.234
+domain:hddolby.com          104.17.219.163
+domain:m-team.io            104.17.6.77
+domain:crabpt.vip           104.16.162.242
