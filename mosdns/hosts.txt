@@ -3,8 +3,8 @@
 # 负载均衡策略: 相同CDN的不同域名使用不同优选IP以分散负载
 
 domain:registry-backup.urzz.me 192.168.110.1
-domain:proxy.urzz.me 192.168.100.240
-regexp:^[^.]+\.urzz\.me$   192.168.98.254
+domain:proxy.urzz.me           192.168.100.240
+regexp:^[^.]+\.urzz\.me$    192.168.98.254
 domain:m-team.cc            104.17.162.186  # 已优选: 104.16.6.84 -> 104.17.162.186
 domain:audiences.me         104.16.101.234  # 已优选: 104.18.152.70 -> 104.16.101.234
 domain:hddolby.com          104.17.219.163  # 已优选: 104.16.28.144 -> 104.17.219.163
