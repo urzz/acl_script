@@ -9,8 +9,6 @@ payload:
   - '+.urzz.me'
   - '+.urzz.xyz'
   - cursor.blob.core.windows.net
-  - '*.githubusercontent.com'
-  - github.com
   - '*'
   - '*.lan'
   - '*.localdomain'
