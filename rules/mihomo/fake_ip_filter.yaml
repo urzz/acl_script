@@ -8,6 +8,7 @@
 payload:
   - '+.urzz.me'
   - '+.urzz.xyz'
+  - '+.argotunnel.com'
   - cursor.blob.core.windows.net
   - '*'
   - '*.lan'
