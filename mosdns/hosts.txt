@@ -4,7 +4,8 @@
 
 domain:registry-backup.urzz.me 192.168.110.1
 domain:proxy.urzz.me           192.168.100.240
-regexp:^[^.]+\.urzz\.me$    192.168.98.254
+domain:git.urzz.me             192.168.108.104
+regexp:^[^.]+\.urzz\.me$    192.168.108.100
 domain:m-team.cc            104.17.162.186  # 已优选: 104.16.6.84 -> 104.17.162.186
 domain:audiences.me         104.16.101.234  # 已优选: 104.18.152.70 -> 104.16.101.234
 domain:hddolby.com          104.17.219.163  # 已优选: 104.16.28.144 -> 104.17.219.163
